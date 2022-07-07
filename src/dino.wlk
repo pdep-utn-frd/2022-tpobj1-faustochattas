@@ -139,3 +139,8 @@ object dino {
 		return vivo
 	}
 }
+object camello {
+	method estarVivo() {
+		return dino.estaVivo()
+	}
+}
