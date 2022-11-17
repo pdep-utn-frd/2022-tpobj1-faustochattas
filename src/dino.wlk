@@ -12,7 +12,8 @@ object juego{
 		game.addVisual(cactus)
 		game.addVisual(dino)
 		game.addVisual(reloj)
-	
+		game.addVisual(tacho)
+
 		keyboard.space().onPressDo{ self.jugar()}
 		
 		game.onCollideDo(dino,{ obstaculo => obstaculo.chocar()})
@@ -23,6 +24,7 @@ object juego{
 		dino.iniciar()
 		reloj.iniciar()
 		cactus.iniciar()
+		tacho.iniciar()
 	}
 	
 	method jugar(){
@@ -40,8 +42,8 @@ object juego{
 		cactus.detener()
 		reloj.detener()
 		dino.morir()
+		tacho.detener()
 	}
-	
 }
 
 object gameOver {
@@ -72,22 +74,21 @@ object reloj {
 
 object cactus {
 	 
-	var position = self.posicionInicial()
+	const posicionInicial = game.at(game.width()-1,suelo.position().y())
+	var position = posicionInicial
 
 	method image() = "cactus.png"
 	method position() = position
 	
-	method posicionInicial() = game.at(game.width()-1,suelo.position().y())
-
 	method iniciar(){
-		position = self.posicionInicial()
+		position = posicionInicial
 		game.onTick(velocidad,"moverCactus",{self.mover()})
 	}
 	
 	method mover(){
 		position = position.left(1)
 		if (position.x() == -1)
-			position = self.posicionInicial()
+			position = posicionInicial
 	}
 	
 	method chocar(){
@@ -108,7 +109,6 @@ object suelo{
 
 object dino {
 	var vivo = true
-
 	var position = game.at(1,suelo.position().y())
 	
 	method image() = "dino.png"
@@ -129,7 +129,7 @@ object dino {
 		position = position.down(1)
 	}
 	method morir(){
-		game.say(self,"¡Auch!")
+		game.say(self,"Estoy muerto!!")
 		vivo = false
 	}
 	method iniciar() {
@@ -139,8 +139,29 @@ object dino {
 		return vivo
 	}
 }
-object camello {
-	method estarVivo() {
-		return dino.estaVivo()
+
+object tacho {
+	 
+	var position = self.posicionInicial()
+
+	method image() = "tacho.png"
+	method position() = position
+	method posicionInicial() = game.at(game.width()-4,suelo.position().y())
+	method iniciar(){
+		position = self.posicionInicial()
+		game.onTick(velocidad,"mueveElTacho",{self.mover()})
+	}
+	
+	method mover(){
+		position = position.left(1)
+		if (position.x() == -1)
+			position = self.posicionInicial()
+	}
+	
+	method chocar(){
+		juego.terminar()
+	}
+    method detener(){
+		game.removeTickEvent("mueveElTacho")
 	}
 }
